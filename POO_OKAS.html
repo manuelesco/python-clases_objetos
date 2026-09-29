@@ -1,0 +1,2345 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tutorial Interactivo - Archivos de texto y csv en Python</title>
+	
+	<!-- Tabler Icons — siempre antes de tu CSS -->
+	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
+  
+  
+    <style>
+        *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+        :root {
+            --python-blue: #306998; --python-blue-light: #4B8BBE; --python-blue-dark: #265577;
+            --python-yellow: #FFD43B; --python-yellow-light: #FFE873; --python-yellow-dark: #E5BE01;
+            --bg-dark: #1a1a2e; --bg-card: #16213e; --bg-code: #0f0f23;
+            --text-light: #e0e0e0; --text-muted: #a0a0b8;
+            --success: #4caf50; --error: #f44336; --warning: #ff9800;
+            --border-radius: 12px; --shadow: 0 8px 32px rgba(0,0,0,0.3);
+			--color-rojo: red;
+			--color-blanco: white;
+			--color-green: green;
+        }
+		p {
+			text-align: justify;
+		}
+		
+		.text-center { text-align: center; }
+		
+        html { scroll-behavior: smooth; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: var(--bg-dark); color: var(--text-light); line-height: 1.7; min-height: 100vh; }
+        ::-webkit-scrollbar { width: 10px; }
+        ::-webkit-scrollbar-track { background: var(--bg-dark); }
+        ::-webkit-scrollbar-thumb { background: var(--python-blue); border-radius: 5px; }
+        ::-webkit-scrollbar-thumb:hover { background: var(--python-blue-light); }
+
+        header { background: linear-gradient(135deg, var(--python-blue-dark) 0%, var(--python-blue) 50%, var(--python-yellow-dark) 100%); padding: 40px 20px; text-align: center; position: relative; overflow: hidden; }
+        header::before { content: ''; position: absolute; top: -50%; left: -50%; width: 200%; height: 200%; background: radial-gradient(circle, rgba(255,212,59,0.1) 0%, transparent 60%); animation: pulse 8s ease-in-out infinite; }
+        @keyframes pulse { 0%, 100% { transform: scale(1); opacity: 0.5; } 50% { transform: scale(1.1); opacity: 1; } }
+        .logo-container { display: inline-flex; align-items: center; gap: 15px; margin-bottom: 20px; position: relative; z-index: 1; }
+        .python-logo-svg { width: 100px; height: 100px; filter: drop-shadow(2px 4px 6px rgba(0,0,0,0.3)); }
+        header h1 { font-size: 2.5em; font-weight: 800; color: #fff; text-shadow: 2px 2px 4px rgba(0,0,0,0.3); position: relative; z-index: 1; }
+        header h1 span.blue { color: var(--python-yellow); }
+        header h1 span.yellow { color: var(--python-blue-light); }
+        header p { font-size: 1.2em; color: rgba(255,255,255,0.85); margin-top: 10px; position: relative; z-index: 1; }
+
+        nav { background: var(--bg-card); padding: 15px 20px; position: sticky; top: 0; z-index: 1000; box-shadow: 0 4px 20px rgba(0,0,0,0.4); border-bottom: 2px solid var(--python-blue); }
+        .nav-container { max-width: 1200px; margin: 0 auto; display: flex; flex-wrap: wrap; gap: 6px; align-items: center; justify-content: center; }
+        .nav-btn { background: transparent; color: var(--text-light); border: 1px solid rgba(48,105,152,0.4); padding: 7px 13px; border-radius: 25px; cursor: pointer; font-size: 0.8em; transition: all 0.3s ease; white-space: nowrap; }
+        .nav-btn:hover, .nav-btn.active { background: var(--python-blue); border-color: var(--python-yellow); color: var(--python-yellow); transform: translateY(-2px); box-shadow: 0 4px 15px rgba(48,105,152,0.4); }
+        .progress-bar { width: 100%; max-width: 1200px; margin: 10px auto 0; height: 4px; background: rgba(255,255,255,0.1); border-radius: 2px; overflow: hidden; }
+        .progress-fill { height: 100%; background: linear-gradient(90deg, var(--python-blue), var(--python-yellow)); width: 0%; transition: width 0.5s ease; border-radius: 2px; }
+        .progress-text { text-align: center; font-size: 0.75em; color: var(--text-muted); margin-top: 4px; }
+
+        main { max-width: 900px; margin: 0 auto; padding: 30px 20px 60px; }
+        .section { display: none; animation: fadeIn 0.5s ease; }
+        .section.active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        .section-title { font-size: 2em; font-weight: 700; margin-bottom: 10px; display: flex; align-items: center; gap: 12px; }
+        .section-title .icon { width: 45px; height: 45px; background: linear-gradient(135deg, var(--python-blue), var(--python-yellow)); border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 1.3em; flex-shrink: 0; }
+        .section-subtitle { color: var(--text-muted); font-size: 1.1em; margin-bottom: 30px; padding-left: 57px; }
+
+        .card { background: var(--bg-card); border-radius: var(--border-radius); padding: 25px; margin-bottom: 25px; box-shadow: var(--shadow); border: 1px solid rgba(48,105,152,0.2); transition: transform 0.3s ease, border-color 0.3s ease; }
+        .card:hover { border-color: rgba(255,212,59,0.3); }
+        .card h3 { color: var(--python-yellow); font-size: 1.3em; margin-bottom: 12px; display: flex; align-items: center; gap: 8px; }
+		.card h3.sub{ color: var(--python-blue); font-size: 1.3em; margin-bottom: 12px; display: flex; align-items: center; gap: 8px; }
+        .card p, .card li { color: var(--text-muted); margin-bottom: 8px; }
+        .card ul { padding-left: 20px; }
+        .card ul li { margin-bottom: 5px; }
+        .highlight { color: var(--python-yellow); font-weight: 600; }
+		.warning { color: var(--color-rojo); font-weight: 600; }
+		.numpy { color: rgb(77, 119, 207); font-weight: 600; }
+
+        .code-block { background: var(--bg-code); border-radius: 10px; margin: 15px 0; overflow: hidden; border: 1px solid rgba(48,105,152,0.3); }
+        .code-header { background: rgba(48,105,152,0.3); padding: 8px 15px; display: flex; justify-content: space-between; align-items: center; }
+        .code-header span { font-size: 0.8em; color: var(--text-muted); font-weight: 600; text-transform: uppercase; letter-spacing: 1px; }
+        .code-dots { display: flex; gap: 6px; }
+        .code-dots span { width: 12px; height: 12px; border-radius: 50%; }
+        .code-dots span:nth-child(1) { background: #ff5f56; }
+        .code-dots span:nth-child(2) { background: #ffbd2e; }
+        .code-dots span:nth-child(3) { background: #27c93f; }
+        .code-body { padding: 15px 20px; overflow-x: auto; }
+        .code-body pre { margin: 0; font-family: 'Consolas', 'Monaco', 'Courier New', monospace; font-size: 0.9em; line-height: 1.8; }
+        .kw { color: #c792ea; font-weight: bold; }
+        .fn { color: #82aaff; }
+        .st { color: #c3e88d; }
+        .cm { color: #546e7a; font-style: italic; }
+        .nb { color: #89ddff; }
+        .num { color: #f78c6c; }
+        .op { color: #89ddff; }
+        .var { color: #ffcb6b; }
+        .bool { color: #ff5370; font-weight: bold; }
+        .indent { display: inline-block; width: 4ch; }
+
+        .output-block { background: rgba(76,175,80,0.1); border: 1px solid rgba(76,175,80,0.3); border-radius: 8px; padding: 12px 18px; margin-top: 10px; font-family: 'Consolas', monospace; font-size: 0.9em; color: var(--success); }
+        .output-block .output-label { font-size: 0.75em; color: var(--success); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 5px; font-weight: 600; }
+
+        .demo-container { background: linear-gradient(135deg, rgba(48,105,152,0.15), rgba(255,212,59,0.05)); border: 2px solid var(--python-blue); border-radius: var(--border-radius); padding: 25px; margin: 25px 0; }
+        .demo-title { color: var(--python-yellow); font-size: 1.1em; font-weight: 700; margin-bottom: 15px; display: flex; align-items: center; gap: 8px; }
+        .demo-input-group { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; margin-bottom: 15px; }
+        .demo-input-group label { font-size: 0.9em; color: var(--text-muted); min-width: 120px; }
+        .demo-input { background: var(--bg-code); border: 1px solid rgba(48,105,152,0.4); color: var(--text-light); padding: 10px 15px; border-radius: 8px; font-size: 0.95em; font-family: 'Consolas', monospace; outline: none; transition: border-color 0.3s; min-width: 150px; }
+        .demo-input:focus { border-color: var(--python-yellow); box-shadow: 0 0 10px rgba(255,212,59,0.2); }
+        .demo-select { background: var(--bg-code); border: 1px solid rgba(48,105,152,0.4); color: var(--text-light); padding: 10px 15px; border-radius: 8px; font-size: 0.95em; outline: none; cursor: pointer; min-width: 150px; }
+        .demo-select:focus { border-color: var(--python-yellow); }
+        .demo-select option { background: var(--bg-code); color: var(--text-light); }
+        .run-btn { background: linear-gradient(135deg, var(--python-blue), var(--python-blue-light)); color: #fff; border: none; padding: 10px 25px; border-radius: 8px; cursor: pointer; font-size: 0.95em; font-weight: 600; transition: all 0.3s ease; display: inline-flex; align-items: center; gap: 8px; }
+        .run-btn:hover { background: linear-gradient(135deg, var(--python-yellow-dark), var(--python-yellow)); color: var(--bg-dark); transform: translateY(-2px); box-shadow: 0 4px 15px rgba(255,212,59,0.3); }
+        .demo-output { background: var(--bg-code); border-radius: 8px; padding: 15px; margin-top: 15px; font-family: 'Consolas', monospace; font-size: 0.9em; min-height: 50px; border: 1px solid rgba(48,105,152,0.2); white-space: pre-wrap; transition: border-color 0.3s; }
+        .demo-output.has-output { border-color: var(--python-yellow); }
+
+        /* QUIZ — nuevo diseño */
+        .quiz-card { background: var(--bg-card); border: 1px solid rgba(48,105,152,0.3); border-radius: 14px; padding: 24px; margin-top: 20px; }
+        .quiz-q { font-size: 1rem; font-weight: 600; color: var(--text-light); margin-bottom: 16px; line-height: 1.5; }
+        .quiz-options { display: grid; gap: 10px; }
+        .quiz-opt { background: rgba(48,105,152,0.1); border: 2px solid rgba(48,105,152,0.3); border-radius: 10px; padding: 12px 16px; cursor: pointer; font-family: 'Consolas', 'Monaco', monospace; font-size: 0.88rem; color: var(--text-light); text-align: left; transition: all 0.2s; }
+        .quiz-opt:hover { border-color: var(--python-blue-light); background: rgba(48,105,152,0.2); }
+        .quiz-opt.correct { border-color: var(--success); background: rgba(76,175,80,0.15); color: var(--success); }
+        .quiz-opt.wrong { border-color: var(--error); background: rgba(244,67,54,0.1); color: var(--error); }
+        .quiz-feedback { margin-top: 14px; padding: 12px 16px; border-radius: 10px; font-size: 0.9rem; display: none; }
+        .quiz-feedback.show { display: block; }
+        .quiz-feedback.ok { background: rgba(76,175,80,0.15); border: 1px solid rgba(76,175,80,0.3); color: var(--success); }
+        .quiz-feedback.fail { background: rgba(244,67,54,0.1); border: 1px solid rgba(244,67,54,0.3); color: var(--error); }
+        .quiz-next { margin-top: 14px; background: linear-gradient(135deg, var(--python-yellow-dark), var(--python-yellow)); color: var(--bg-dark); border: none; border-radius: 8px; padding: 10px 22px; font-weight: 700; cursor: pointer; display: none; transition: all 0.2s; font-size: 0.95em; }
+        .quiz-next.show { display: inline-block; }
+        .quiz-next:hover { transform: translateY(-2px); box-shadow: 0 4px 15px rgba(255,212,59,0.4); }
+
+        .flow-diagram { display: flex; flex-direction: column; align-items: center; gap: 0; margin: 20px 0; padding: 20px; }
+        .flow-box { background: var(--bg-card); border: 2px solid var(--python-blue); border-radius: 10px; padding: 12px 25px; text-align: center; font-weight: 600; position: relative; min-width: 200px; }
+        .flow-box.start { border-radius: 25px; background: linear-gradient(135deg, var(--python-blue), var(--python-blue-light)); border-color: var(--python-blue-light); }
+        .flow-box.decision { border-color: var(--python-yellow); background: rgba(255,212,59,0.1); color: var(--python-yellow); border-radius: 10px; padding: 15px 25px; min-width: 200px; }
+        .flow-box.action { border-color: var(--python-blue-light); background: rgba(75,139,190,0.1); }
+        .flow-box.end { border-radius: 25px; background: linear-gradient(135deg, var(--python-yellow-dark), var(--python-yellow)); border-color: var(--python-yellow); color: var(--bg-dark); }
+        .flow-arrow { width: 2px; height: 30px; background: var(--text-muted); position: relative; }
+        .flow-arrow::after { content: '▼'; position: absolute; bottom: -8px; left: 50%; transform: translateX(-50%); color: var(--text-muted); font-size: 0.7em; }
+        .flow-label { font-size: 0.8em; color: var(--python-yellow); font-weight: 600; margin: 5px 0; }
+        .flow-branch { display: flex; gap: 40px; align-items: flex-start; margin: 10px 0; }
+        .flow-branch-item { display: flex; flex-direction: column; align-items: center; gap: 0; }
+
+        .comparison-table { width: 100%; min-width: 500px; border-collapse: separate; border-spacing: 0; margin: 20px auto; border-radius: 10px; overflow: hidden; border: 1px solid rgba(48,105,152,0.3); }
+        .comparison-table th { background: linear-gradient(135deg, var(--python-blue-dark), var(--python-blue)); color: var(--python-yellow); padding: 14px 18px; text-align: left; font-weight: 700; font-size: 0.9em; text-transform: uppercase; letter-spacing: 0.5px; text-align: center;}	
+        .comparison-table td { background: var(--bg-card); padding: 12px 18px; border-bottom: 1px solid rgba(48,105,152,0.15); font-size: 0.9em; }
+        .comparison-table tr:last-child td { border-bottom: none; }
+        .comparison-table tr:hover td { background: rgba(48,105,152,0.1); }
+        .comparison-table code { background: rgba(255,212,59,0.1); color: var(--python-yellow); padding: 2px 8px; border-radius: 4px; font-family: 'Consolas', monospace; font-size: 0.9em; }
+
+        .tip-box { background: rgba(255,212,59,0.08); border-left: 4px solid var(--python-yellow); border-radius: 0 10px 10px 0; padding: 18px 20px; margin: 20px 0; }
+        .tip-box .tip-title { color: var(--python-yellow); font-weight: 700; margin-bottom: 8px; display: flex; align-items: center; gap: 8px; }
+        .tip-box p { color: var(--text-muted); font-size: 0.95em; }
+        .warning-box { background: rgba(244,67,54,0.08); border-left: 4px solid var(--error); border-radius: 0 10px 10px 0; padding: 18px 20px; margin: 20px 0; }
+        <!-- .warning-box .warning-title { color: var(--error); font-weight: 700; margin-bottom: 8px; display: flex; align-items: center; gap: 8px; } -->
+		.warning-box .warning-title { color: var(--color-rojo); font-weight: 700; margin-bottom: 8px; display: flex; align-items: center; gap: 8px; }
+		.warning-box p { color: #fef08a; font-size: 0.95em; }
+		.note-box { background: rgba(255,212,59,0.08); border-left: 4px solid var(--color-green); border-radius: 0 10px 10px 0; padding: 18px 20px; margin: 20px 0; }
+        .note-box .note-title { color: var(--color-green); font-weight: 700; margin-bottom: 8px; display: flex; align-items: center; gap: 8px; }
+        .note-box p { color: var(--text-muted); font-size: 0.95em; }
+
+        .nav-buttons { display: flex; justify-content: space-between; margin-top: 40px; padding-top: 20px; border-top: 1px solid rgba(48,105,152,0.2); }
+        .nav-arrow-btn { background: linear-gradient(135deg, var(--python-blue), var(--python-blue-light)); color: #fff; border: none; padding: 12px 25px; border-radius: 10px; cursor: pointer; font-size: 0.95em; font-weight: 600; transition: all 0.3s ease; display: flex; align-items: center; gap: 8px; }
+        .nav-arrow-btn:hover { background: linear-gradient(135deg, var(--python-yellow-dark), var(--python-yellow)); color: var(--bg-dark); transform: translateY(-2px); box-shadow: 0 4px 15px rgba(255,212,59,0.3); }
+        .nav-arrow-btn:disabled { opacity: 0.3; cursor: not-allowed; transform: none; box-shadow: none; }
+
+        .score-panel { position: fixed; bottom: 20px; right: 20px; background: var(--bg-card); border: 2px solid var(--python-yellow); border-radius: 15px; padding: 15px 20px; box-shadow: 0 8px 30px rgba(0,0,0,0.5); z-index: 999; min-width: 180px; }
+        .score-panel .score-label { font-size: 0.75em; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; }
+        .score-panel .score-value { font-size: 2em; font-weight: 800; color: var(--python-yellow); line-height: 1; }
+        .score-panel .score-total { font-size: 0.85em; color: var(--text-muted); }
+
+        footer { text-align: center; padding: 30px 20px; color: var(--text-muted); font-size: 0.85em; border-top: 1px solid rgba(48,105,152,0.2); margin-top: 40px; }
+        @media (max-width: 768px) {
+            header h1 { font-size: 1.8em; } 
+			.section-title { font-size: 1.5em; } 
+			.section-subtitle { padding-left: 0; }
+            .nav-container { gap: 5px; } 
+			.nav-btn { padding: 6px 12px; font-size: 0.75em; } 
+			.code-body pre { font-size: 0.8em; }
+            .demo-input-group { flex-direction: column; align-items: stretch; } 
+			.demo-input-group label { min-width: auto; }
+            .flow-branch { flex-direction: column; gap: 15px; } 
+			.score-panel { bottom: 10px; right: 10px; padding: 10px 15px; min-width: 140px; }
+            .score-panel .score-value { font-size: 1.5em; } .python-logo-svg { width: 80px; height: 80px; }
+			.footer-logo-space img { height: 45px; }
+        }
+
+        .bounce-in { animation: bounceIn 0.6s ease; }
+        @keyframes bounceIn { 0% { transform: scale(0.3); opacity: 0; } 50% { transform: scale(1.05); } 70% { transform: scale(0.9); } 100% { transform: scale(1); opacity: 1; } }
+
+        .challenge-box { background: linear-gradient(135deg, rgba(255,152,0,0.1), rgba(244,67,54,0.05)); border: 2px solid var(--warning); border-radius: var(--border-radius); padding: 25px; margin: 25px 0; }
+        .challenge-box .challenge-title { color: var(--warning); font-size: 1.1em; font-weight: 700; margin-bottom: 10px; display: flex; align-items: center; gap: 8px; }
+        .challenge-box p { color: var(--text-muted); margin-bottom: 10px; }
+        .mini-editor { background: var(--bg-code); border-radius: 10px; border: 1px solid rgba(48,105,152,0.3); overflow: hidden; margin: 15px 0; }
+        .mini-editor-header { background: rgba(48,105,152,0.3); padding: 8px 15px; display: flex; justify-content: space-between; align-items: center; }
+        .mini-editor-header span { font-size: 0.8em; color: var(--text-muted); font-weight: 600; }
+        .editor-instructions { background: rgba(255,212,59,0.06); border-bottom: 1px solid rgba(48,105,152,0.2); padding: 12px 18px; font-family: 'Consolas', monospace; font-size: 0.85em; color: var(--text-muted); line-height: 1.8; white-space: pre; user-select: text; -webkit-user-select: text; }
+        .editor-instructions .instruction-line { color: #546e7a; font-style: italic; }
+        .editor-instructions .instruction-var { color: #ffcb6b; }
+        .mini-editor textarea { width: 100%; min-height: 280px; background: transparent; border: none; color: var(--text-light); font-family: 'Consolas', monospace; font-size: 0.9em; padding: 15px; resize: vertical; outline: none; line-height: 1.8; tab-size: 4; }
+        .mini-editor textarea::placeholder { color: rgba(160,160,184,0.3); }
+        .mini-editor-footer { padding: 10px 15px; display: flex; gap: 10px; align-items: center; flex-wrap: wrap; border-top: 1px solid rgba(48,105,152,0.2); }
+        .editor-output { background: var(--bg-code); border: 1px solid rgba(48,105,152,0.2); border-radius: 8px; padding: 12px 15px; font-family: 'Consolas', monospace; font-size: 0.85em; min-height: 40px; margin-top: 10px; white-space: pre-wrap; color: var(--text-muted); }
+        .editor-output.success { border-color: rgba(76,175,80,0.4); color: var(--success); }
+        .editor-output.error { border-color: rgba(244,67,54,0.4); color: var(--error); }
+        .steps { display: flex; justify-content: center; gap: 5px; margin: 20px 0; flex-wrap: wrap; }
+        .step-dot { width: 35px; height: 35px; border-radius: 50%; background: rgba(48,105,152,0.2); border: 2px solid rgba(48,105,152,0.3); display: flex; align-items: center; justify-content: center; font-size: 0.8em; font-weight: 700; color: var(--text-muted); transition: all 0.3s; }
+        .step-dot.completed { background: var(--python-blue); border-color: var(--python-blue-light); color: #fff; }
+        .step-dot.current { background: var(--python-yellow); border-color: var(--python-yellow); color: var(--bg-dark); transform: scale(1.2); }
+        .solution-toggle { background: none; border: 1px solid rgba(255,212,59,0.3); color: var(--python-yellow); padding: 8px 18px; border-radius: 8px; cursor: pointer; font-size: 0.85em; transition: all 0.3s ease; margin-top: 10px; }
+        .solution-toggle:hover { background: rgba(255,212,59,0.1); border-color: var(--python-yellow); }
+        .solution-content { display: none; margin-top: 10px; }
+        .solution-content.visible { display: block; }
+
+
+	
+	
+	.section-header {
+		display: flex;
+		align-items: center;
+		gap: 16px;
+		margin-bottom: 28px;
+		padding-bottom: 18px;
+		border-bottom: 1px solid var(--border);
+	}
+  
+	.section-icon {
+		width: 48px;
+		height: 48px;
+		border-radius: 12px;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		font-size: 22px;
+		flex-shrink: 0;
+	}
+
+	.icon-blue { background: rgba(48,105,152,0.25); border: 1px solid rgba(48,105,152,0.4); }
+	.icon-yellow { background: rgba(255,212,59,0.15); border: 1px solid rgba(255,212,59,0.3); }
+	.icon-green { background: rgba(63,185,80,0.15); border: 1px solid rgba(63,185,80,0.3); }
+	.icon-red { background: rgba(248,81,73,0.15); border: 1px solid rgba(248,81,73,0.3); }
+	.icon-purple { background: rgba(210,168,255,0.15); border: 1px solid rgba(210,168,255,0.3); }
+	.icon-orange { background: rgba(240,136,62,0.15); border: 1px solid rgba(240,136,62,0.3); }
+	
+	.section-header-text h2 {
+		font-size: 1.7rem;
+		font-weight: 700;
+		letter-spacing: -0.5px;
+	}
+	
+	.section-header-text p {
+		color: var(--text-dim);
+		font-size: 0.9rem;
+		margin-top: 4px;
+	}
+	
+	/* COMPARISON TABLE */
+  .cmp-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+    font-size: 0.9rem;
+  }
+
+  .cmp-table th {
+    background: var(--py-blue);
+    color: white;
+    padding: 12px 16px;
+    text-align: left;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+  }
+
+  .cmp-table th:first-child { border-radius: 10px 0 0 0; }
+  .cmp-table th:last-child { border-radius: 0 10px 0 0; }
+
+  .cmp-table td {
+    padding: 12px 16px;
+    border-bottom: 1px solid var(--border);
+    color: var(--text-dim);
+    line-height: 1.5;
+  }
+
+  .cmp-table tr:nth-child(even) td { background: rgba(255,255,255,0.02); }
+  .cmp-table tr:hover td { background: rgba(48,105,152,0.08); }
+  .cmp-table td:first-child { font-family: 'JetBrains Mono', monospace; color: var(--py-yellow); font-weight: 700; }
+  
+  /* ANCHO DE LA TABLA */
+	.comparison-table.table-compact th,
+	.comparison-table.table-compact td {
+		font-size: 0.9em;
+		padding: 12px 18px;
+		white-space: nowrap;
+	}
+
+    /* SECCIÓN EXPANDIBLE */
+	.expandable-card { cursor: pointer; transition: all 0.3s ease; }
+	.expandable-card:hover { transform: translateX(5px); }
+	.expandable-card .expandable-details { display: none; margin-top: 15px; padding-top: 15px; border-top: 2px solid var(--python-blue); }
+	.expandable-card.expanded .expandable-details { display: block; animation: fadeIn 0.3s ease; }
+	.expandable-card h3::after { content: " ▶"; font-size: 0.8em; margin-left: auto; }
+	.expandable-card.expanded h3::after { content: " ▼"; }
+
+    /* ── Prism syntax highlighting ── */
+    .snippet-tag {
+      font-family: 'Consolas','Monaco','Courier New',monospace;
+      font-size: .72rem;
+      padding: 2px 8px;
+      border-radius: 20px;
+      font-weight: 600;
+    }
+    .tag-output { background: rgba(76,175,80,.15); color: #4caf50; }
+
+    .output-bar { border-top: 1px solid rgba(48,105,152,0.3); justify-content: flex-end; }
+
+    /* code-wrap: columna de números + bloque de código */
+    .code-wrap {
+      display: flex;
+      overflow-x: auto;
+    }
+    .line-numbers-col {
+      flex-shrink: 0;
+      background: rgba(48,105,152,0.15);
+      border-right: 1px solid rgba(48,105,152,0.3);
+      padding: 15px 12px 15px 14px;
+      font-family: 'Consolas','Monaco','Courier New',monospace;
+      font-size: 0.9em;
+      line-height: 1.8;
+      color: #445566;
+      text-align: right;
+      user-select: none;
+      -webkit-user-select: none;
+      pointer-events: none;
+    }
+    .line-numbers-col span { display: block; }
+    .code-wrap pre[class*="language-"] {
+      flex: 1;
+      margin: 0 !important;
+      border-radius: 0 !important;
+      padding: 15px 20px !important;
+      background: transparent !important;
+      font-family: 'Consolas','Monaco','Courier New',monospace !important;
+      font-size: 0.9em !important;
+      line-height: 1.8 !important;
+      overflow-x: visible;
+    }
+
+    /* Prism token overrides */
+    .token.comment,.token.prolog,.token.doctype { color: #546e7a !important; font-style: italic; }
+    .token.keyword  { color: #c792ea !important; font-weight: bold; }
+    .token.builtin  { color: #89ddff !important; }
+    .token.string,.token.char { color: #c3e88d !important; }
+    .token.number   { color: #f78c6c !important; }
+    .token.function { color: #82aaff !important; }
+    .token.class-name { color: #89ddff !important; font-weight: 600; }
+    .token.decorator,.token.at-rule { color: #4ade80 !important; }
+    .token.boolean  { color: #ff5370 !important; font-weight: bold; }
+    .token.operator { color: #89ddff !important; }
+    .token.punctuation { color: #89ddff !important; }
+
+    /* output-body (debajo de la barra de salida) */
+    .output-body {
+      background: rgba(0,0,0,0.25);
+      padding: 12px 20px;
+      font-family: 'Consolas','Monaco','Courier New',monospace;
+      font-size: 0.9em;
+      line-height: 1.8;
+    }
+	
+	.output-body pre {
+		color: #4ade80;
+	}
+    .output-line { display: block; color: var(--success); }
+    .output-line::before { content: '>>> '; color: rgba(160,160,184,0.5); user-select: none; }
+	
+	/* output-body-file (debajo de la barra de salida) */
+    .output-body-file {
+      background: #E8DFC8;
+      padding: 12px 20px;
+      font-family: 'Consolas','Monaco','Courier New',monospace;
+      font-size: 1.1em;
+      line-height: 1.8;
+    }
+	
+	.output-body-file pre {
+		color: #2E2416;
+	}
+
+    /* ── section heading ── */
+    .section-label {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      font-size: .8rem;
+      font-weight: 600;
+      letter-spacing: .1em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      margin-bottom: 20px;
+      margin-top: 48px;
+    }
+
+    .section-label::before {
+      content: '';
+      display: block;
+      width: 24px;
+      height: 2px;
+      background: var(--python-yellow);
+      border-radius: 2px;
+    }
+
+
+/* ───────────────────────────────────────── */
+/* ESTILOS TIPO python_syntax_OKAS.html      */
+/* ───────────────────────────────────────── */
+
+.snippet {
+  background: var(--bg-card);
+  border: 1px solid rgba(48,105,152,0.25);
+  border-radius: 12px;
+  margin-bottom: 32px;
+  overflow: hidden;
+  transition: border-color .2s, box-shadow .2s;
+}
+
+.snippet:hover {
+  border-color: rgba(255,212,59,.35);
+  box-shadow: 0 0 32px rgba(255,212,59,.06);
+}
+
+.snippet-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 18px;
+  background: rgba(255,255,255,0.03);
+  border-bottom: 1px solid rgba(48,105,152,0.25);
+  gap: 12px;
+}
+
+.dots {
+  display: flex;
+  gap: 6px;
+}
+
+.dots span {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  display: block;
+}
+
+.dots span:nth-child(1) { background: #ff5f57; }
+.dots span:nth-child(2) { background: #febc2e; }
+.dots span:nth-child(3) { background: #28c840; }
+
+.snippet-title {
+  font-family: 'Consolas','Monaco','Courier New',monospace;
+  font-size: .8rem;
+  color: var(--text-muted);
+  flex: 1;
+  text-align: center;
+}
+
+.snippet-tag {
+  font-family: 'Consolas','Monaco','Courier New',monospace;
+  font-size: .72rem;
+  padding: 2px 8px;
+  border-radius: 20px;
+  font-weight: 600;
+}
+
+.tag-fn {
+  background: rgba(92,216,247,.15);
+  color: #5cd8f7;
+}
+
+.tag-output {
+  background: rgba(74,222,128,.15);
+  color: #4ade80;
+}
+
+.tag-file {
+  background: rgba(251,146,60,.15);
+  color: #fb923c;
+}
+
+.output-bar {
+  border-top: 1px solid rgba(48,105,152,0.25);
+  justify-content: flex-end;
+}
+
+.snippet pre[class*="language-"] {
+  margin: 0 !important;
+  border-radius: 0 !important;
+  padding: 22px 24px !important;
+  background: transparent !important;
+  font-family: 'Consolas','Monaco','Courier New',monospace !important;
+  font-size: .85rem !important;
+  line-height: 1.75 !important;
+  overflow-x: auto;
+}
+
+.output-body {
+  background: #0a0c10;
+  padding: 16px 24px;
+  font-family: 'Consolas','Monaco','Courier New',monospace;
+  font-size: .85rem;
+  line-height: 1.75;
+}
+
+.output-line {
+  display: block;
+  color: #4ade80;
+}
+
+.output-line::before {
+  content: '>>> ';
+  color: var(--text-muted);
+  user-select: none;
+}
+
+.code-wrap {
+  display: flex;
+  overflow-x: auto;
+}
+
+.line-numbers-col {
+  flex-shrink: 0;
+  background: rgba(255,255,255,0.03);
+  border-right: 1px solid rgba(48,105,152,0.25);
+  padding: 22px 14px 22px 16px;
+  font-family: 'Consolas','Monaco','Courier New',monospace;
+  font-size: .85rem;
+  line-height: 1.75;
+  color: #3d4a6a;
+  text-align: right;
+  user-select: none;
+  -webkit-user-select: none;
+  pointer-events: none;
+}
+
+.line-numbers-col span {
+  display: block;
+}
+
+.section-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  font-size: .8rem;
+  font-weight: 600;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  margin-bottom: 20px;
+  margin-top: 48px;
+}
+
+.section-label::before {
+  content: '';
+  display: block;
+  width: 24px;
+  height: 2px;
+  background: var(--python-yellow);
+  border-radius: 2px;
+}
+
+/***FOOTER***/
+	.footer-m365 {
+    background: linear-gradient(
+        180deg,
+        #0d1230 0%, 
+		#060a1a 100%
+    );
+    /*border-top: 1px solid #edebe9;*/
+    padding: 10px 5%;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    text-align: center;
+  }
+  .footer-content{
+    max-width:900px;      /* mismo ancho que main */
+    margin:0 auto;
+    padding:10px 20px;
+}
+  .footer-m365-label {
+    text-align: center;
+    font-size: 12px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: #7fb8d9;           /* azul-gris suave, legible sobre fondo oscuro, sin competir con el título */
+    opacity: 0.85;
+    margin-bottom: 15px;
+  }
+  .footer-m365-title {
+    text-align: center;
+    font-size: 16px;
+    font-weight: 600;
+    color: #eaf6ff;           /* blanco-azulado, casi blanco, para máximo contraste y jerarquía */
+    text-shadow: 0 0 12px rgba(58, 214, 245, 0.15); /* un glow cian sutil, conecta con el brillo de los logos */
+	margin-bottom: 0px;
+  }
+
+
+.footer-top-bar{
+  height:3px;
+  background:linear-gradient(90deg,#0a2e6b 0%,#1a55d6 45%,#11c9f5 100%);
+}
+
+.footer-bottom-bar{
+  height:3px;
+  background:linear-gradient(90deg,#11c9f5 0%,#1a55d6 55%,#0a2e6b 100%);
+}
+
+.footer-banner{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:10px;
+  padding:0px 0px;
+  padding-bottom: 10px;
+}
+.footer-logo-space{
+  /*width:55px;
+  height:65px;*/
+  display:flex;
+  flex-direction: row;   /* logo arriba, nombre abajo, en vez de lado a lado */
+  align-items:center;
+  justify-content:center;
+}
+.footer-logo-space img{
+  filter: drop-shadow(0 0 6px rgba(58, 214, 245, 0.25));
+  height: 34px;
+  width: auto;
+}
+.footer-logo-space .name{
+  font-size: 1rem;
+  font-weight:700;
+  background: linear-gradient(to right, #0a3d91, #1a6dd4, #3ad6f5);
+  -webkit-background-clip:text;
+  -webkit-text-fill-color:transparent;
+  background-clip:text;
+}
+.footer-divider{
+  width:2px;
+  height:60px;
+  background:linear-gradient(to bottom,#0a2e6b,#1a55d6,#11c9f5);
+}
+.footer-text{
+  display:flex;
+  align-items:center;
+  gap: 10px;
+  flex-wrap:wrap;
+}
+.footer-text .label{
+  font-size: 1rem;
+  font-weight:700;
+  padding-left: 25px;
+  color:#8fb8d9;
+}
+.footer-text .name{
+  font-size: 1rem;
+  font-weight:700;
+  /* background:linear-gradient(to right, #0a3d91, #1a6dd4); */
+  background: repeating-linear-gradient(to right, #0a3d91 0%, #1a6dd4 55%);
+  -webkit-background-clip:text;
+  -webkit-text-fill-color:transparent;
+  background-clip:text;
+}
+
+</style>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-okaidia.min.css" rel="stylesheet"/>
+</head>
+<body>
+    <header>
+        <div class="logo-container">
+            <svg class="python-logo-svg" viewBox="0 0 256 255" xmlns="http://www.w3.org/2000/svg">
+                <defs>
+                    <linearGradient id="pyBlueGrad" x1="12.961%" y1="0.475%" x2="99.844%" y2="99.675%"><stop offset="0%" stop-color="#387EB8"/><stop offset="100%" stop-color="#366994"/></linearGradient>
+                    <linearGradient id="pyYellowGrad" x1="12.961%" y1="0.475%" x2="99.844%" y2="99.675%"><stop offset="0%" stop-color="#FFD43B"/><stop offset="100%" stop-color="#FFE873"/></linearGradient>
+                </defs>
+                <path d="M126.916 0C62.366 0 66.173 28.423 66.173 28.423L66.274 57.564H128.183V68.615H31.131C31.131 68.615 0.085 65.185 0.085 125.675C0.085 186.164 26.773 185.833 26.773 185.833H53.592V158.615C53.592 158.615 53.238 131.22 81.577 131.22H184.388C184.388 131.22 209.822 131.832 209.822 105.038V35.156C209.822 35.156 213.486 0 126.916 0ZM93.314 20.983C99.709 20.983 104.897 26.17 104.897 32.565C104.897 38.96 99.709 44.147 93.314 44.147C86.919 44.147 81.733 38.96 81.733 32.565C81.733 26.17 86.919 20.983 93.314 20.983Z" fill="url(#pyBlueGrad)"/>
+                <path d="M128.76 254.684C193.309 254.684 189.503 226.261 189.503 226.261L189.402 197.12H127.493V186.069H224.545C224.545 186.069 255.591 189.499 255.591 129.01C255.591 68.52 228.903 68.851 228.903 68.851H202.084V96.07C202.084 96.07 202.438 123.464 174.099 123.464H71.289C71.289 123.464 45.854 122.852 45.854 149.646V219.528C45.854 219.528 42.19 254.684 128.76 254.684ZM162.361 233.701C155.966 233.701 150.779 228.514 150.779 222.119C150.779 215.724 155.966 210.537 162.361 210.537C168.756 210.537 173.942 215.724 173.942 222.119C173.942 228.514 168.756 233.701 162.361 233.701Z" fill="url(#pyYellowGrad)"/>
+            </svg>
+        </div>
+        <h1>Fundamentos de Programación en <span class="blue">Python</span></h1>
+        <p class="text-center">
+			Tutorial Interactivo Completo · Aprende la <span class="yellow">Programación Orientada a Objetos</span>
+		</p>
+    </header>
+
+    <nav>
+        <div class="nav-container">
+            <button class="nav-btn active" onclick="goToSection(0)">🏠 Inicio</button>
+            <button class="nav-btn" onclick="goToSection(1)">1 🏗️ Clases y Objetos</button>
+			<button class="nav-btn" onclick="goToSection(2)">2 📦 Atributos</button>
+            <button class="nav-btn" onclick="goToSection(3)">3 🎮 Métodos</button>
+			<button class="nav-btn" onclick="goToSection(4)">4 💊 Encapsulamiento</button>
+			<button class="nav-btn" onclick="goToSection(5)">5 🎛️ Properties</button>
+			<button class="nav-btn" onclick="goToSection(6)">6 🖼️ Diagramas de Clase</button>
+            <button class="nav-btn" onclick="goToSection(7)">🎯 Quiz</button>
+			<button class="nav-btn" onclick="goToSection(8)">📝 Ejercicios</button>            
+        </div>
+        <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+        <div class="progress-text" id="progressText">Sección 1 de 10</div>
+    </nav>
+
+    <main>
+		<!-- ================================================== -->
+		<!-- ===================== INICIO ===================== -->
+		<!-- ================================================== -->
+        <div class="section active" id="section-0">           			
+			<div class="section-header">
+				<div class="section-icon icon-blue">🏠</div>
+				<div class="section-header-text">
+					<h2>Programación Orientada a Objetos</h2>
+					<p>Paradigma que organiza el código en objetos que combinan datos y comportamiento.</p>
+				</div>
+			</div>
+			
+			<div class="card">		
+				<p>
+					La Programación Orientada a Objetos (POO) es un paradigma que organiza el código en torno a 
+					<strong>objetos:</strong> entidades que agrupan datos (atributos) y comportamientos (métodos). 
+					<span class="highlight">Python</span> soporta la POO de forma nativa y elegante, permitiendo modelar 
+					el mundo real de manera intuitiva. Dominar este paradigma es esencial para escribir código reutilizable, 
+					mantenible y escalable.
+				</p>				
+			</div>
+			
+			
+            
+            <div class="nav-buttons"><button class="nav-arrow-btn" disabled>🏠 Inicio</button><button class="nav-arrow-btn" onclick="goToSection(1)">Siguiente: Clases y Objetos →</button></div>
+        </div>
+		
+		<!-- ============================================================ -->
+		<!-- ===================== CLASES Y OBJETOS ===================== -->
+		<!-- ============================================================ -->
+        <div class="section" id="section-1">           			
+			<div class="section-header">
+				<div class="section-icon icon-blue">📂</div>
+				<div class="section-header-text">
+					<h2>Clases y Objetos</h2>
+					<p>la clase <code>Perro</code> es el molde; "Firulais" es un objeto creado a partir de ella.</p>
+				</div>
+			</div>
+			
+			<div class="card">
+				<h3>📂 Clase</h3>
+				<p>
+					Una clase es una plantilla o molde que define las características (atributos) y comportamientos (métodos) que tendrán los objetos creados a partir de ella.
+
+					La clase no representa un elemento específico, sino una descripción general.
+					<br>
+					<strong>Analogía</strong>
+					<br>
+					Si pensamos en un automóvil:
+					<ul>
+						<li>La clase sería el plano de diseño.</li>
+						<li>Los objetos serían los automóviles fabricados usando ese plano.</li>
+					</ul>
+				</p>
+
+				<h3 class="sub">🔤 Sintaxis:</h3>
+<pre>
+<code class="language-python">class NombreClase:
+    pass</code>
+</pre>
+
+				<h3 class="sub">💻 Ejemplo:</h3>
+<pre>
+<code class="language-python">class Motor:
+    pass</code>
+</pre>
+				<p>
+					Aquí se define una clase llamada <code>Motor</code>.
+				</p>
+			</div>
+		
+			
+			<div class="card">
+				<h3>📂 Objeto</h3>
+				<p>
+					Un <strong>objeto</strong> es una instancia de una clase.
+					<br>
+					Es decir, es un elemento real creado a partir del molde definido por la clase.
+				</p>
+
+				<h3 class="sub">🔤 Sintaxis:</h3>
+<pre>
+<code class="language-python">objeto = NombreClase()</code>
+</pre>
+			
+				<h3 class="sub">💻 Ejemplo:</h3>
+<pre>
+<code class="language-python">class Motor:
+    pass
+
+motor1 = Motor()
+motor2 = Motor()</code>
+</pre>
+				<p>
+					Se crean dos objetos diferentes:
+					<ul>
+						<li>motor1</li>
+						<li>motor2</li>
+					</ul>
+				</p>
+				<p>
+					Ambos pertenecen a la clase <code>Motor</code>.
+			</div>
+			
+            
+            <div class="nav-buttons"><button class="nav-arrow-btn" onclick="goToSection(0)">← Anterior</button><button class="nav-arrow-btn" onclick="goToSection(2)">Siguiente: Atributos →</button></div>
+        </div>
+
+		<!-- ============================================================= -->
+		<!-- ========================= ATRIBUTOS ========================= -->
+		<!-- ============================================================= -->
+        <div class="section" id="section-2">
+			<div class="section-header">
+				<div class="section-icon icon-blue"><i class="ti ti-file-type-txt"></i></div>
+				<div class="section-header-text">
+					<h2>Atributos</h2>
+					<p>Variables que almacenan el estado o las características de un objeto.</p>
+				</div>
+			</div>
+			
+			<!--
+				Los atributos son las variables que pertenecen a una clase o a sus instancias. Los métodos son las funciones definidas dentro de una clase. Ambos pueden 
+				ser de instancia (únicos por objeto) o de clase (compartidos por todos los objetos).
+			-->
+			
+			<div class="card">
+				<h3>📂 Atributos</h3>
+				<p>
+					Los <strong>atributos</strong> son variables que almacenan información relacionada con un objeto.
+					<br>
+					Representan las características o propiedades del objeto.
+					<br>
+					<strong>Ejemplo de características de un motor</strong>
+					<ul>
+						<li>potencia</li>
+						<li>voltaje</li>
+						<li>velocidad</li>
+						<li>corriente</li>
+					</ul>
+				</p>
+				<p>
+					Estas características pueden almacenarse como atributos.
+				</p>
+			</div>
+			
+			<div class="card">
+				<h3>📂 Tipos de Atributos</h3>
+				<p>
+					Los atributos suelen clasificarse en:
+					<ul>
+						<li>Atributos de instancia</li>
+						<li>Atributos de clase</li>
+					</ul>
+				</p>
+			</div>
+			
+			<div class="card">				
+				<h3 class="sub">📂 Atributos de instancia</h3>
+				<p>
+					
+					Los atributos de instancia son especificos de un objeto de forma individual (cada objeto posee su propia copia del atributo) y se definen dentro del 
+					método <code>__init__</code>.
+				</p>
+				
+				<h3 class="sub">💻 Ejemplo:</h3>
+				<div class="snippet">
+					<div class="snippet-bar">
+					  <div class="dots"><span></span><span></span><span></span></div>
+					  <span class="snippet-title">Python</span>
+					  <span class="snippet-tag tag-fn">ejemplo</span>
+					</div>
+					<div class="code-wrap">
+						<div class="line-numbers-col"></div>
+<pre>
+<code class="language-python">class Motor:
+
+    def __init__(self, potencia):
+        self.potencia = potencia	# atributo de instancia
+
+motor1 = Motor(10)
+motor2 = Motor(20)
+
+print(f"Motor 1 - Potencia: {motor1.potencia} HP")
+print(f"Motor 2 - Potencia: {motor2.potencia} HP")</code>
+</pre>
+					</div>
+
+					<div class="snippet-bar output-bar">
+					  <span class="snippet-tag tag-output">salida</span>
+					</div>
+
+					<div class="output-body">
+<pre>
+Motor 1 - Potencia: 10 HP
+Motor 2 - Potencia: 20 HP
+</pre>
+					</div>
+				</div>
+				<p>
+					Cada motor tiene una potencia diferente.
+				</p>
+				
+			</div>
+			
+			
+			<div class="card">
+				<h3 class="sub">📂 Atributos de clase</h3>
+				<p>
+					Los atributos de clase pertenecen a la clase completa y son compartidos por todos los objetos.
+				</p>
+
+				<h3 class="sub">💻 Ejemplo:</h3>
+				<div class="snippet">
+					<div class="snippet-bar">
+					  <div class="dots"><span></span><span></span><span></span></div>
+					  <span class="snippet-title">Python</span>
+					  <span class="snippet-tag tag-fn">ejemplo</span>
+					</div>
+					<div class="code-wrap">
+						<div class="line-numbers-col"></div>
+<pre>
+<code class="language-python">class Motor:
+
+    fabricante = "ABB"	            # atributo de clase
+
+    def __init__(self, potencia):
+        self.potencia = potencia	# atributo de instancia
+
+motor1 = Motor(10)
+motor2 = Motor(20)
+
+print(f"Motor 1 - Fabricante: {motor1.fabricante}")
+print(f"Motor 2 - Fabricante: {motor2.fabricante}")</code>
+</pre>
+					</div>
+
+					<div class="snippet-bar output-bar">
+					  <span class="snippet-tag tag-output">salida</span>
+					</div>
+
+					<div class="output-body">
+<pre>
+Motor 1 - Fabricante: ABB
+Motor 2 - Fabricante: ABB
+</pre>
+					</div>
+				</div>
+				<p>
+					El atributo <code>fabricante</code> es común para todos los objetos.
+				</p>	
+			</div>	<!-- FIN ATRIBUTOS DE CLASE -->
+			
+						
+			<div class="nav-buttons"><button class="nav-arrow-btn" onclick="goToSection(1)">← Anterior</button><button class="nav-arrow-btn" onclick="goToSection(3)">Siguiente: Métodos →</button></div>
+		</div>
+		
+		<!-- =================================================== -->
+		<!-- ===================== MÉTODOS ===================== -->
+		<!-- =================================================== -->
+		<div class="section" id="section-3">
+			<div class="section-header">
+				<div class="section-icon icon-yellow"><i class="ti ti-file-type-csv"></i></div>
+				<div class="section-header-text">
+					<h2>Métodos</h2>
+					<p>Funciones definidas dentro de una clase que describen el comportamiento o las acciones que un objeto puede realizar.</p>
+				</div>
+			</div>
+			
+			<div class="card">
+				<h3>📂 Métodos</h3>
+				<p>
+					Los <strong>métodos</strong> son funciones definidas dentro de una clase.
+					<br>
+					Describen las acciones que puede realizar un objeto.
+				</p>
+			</div>
+			
+			<div class="card">
+				<h3>📂 Tipos de Métodos</h3>
+				<p>
+					Los métodos pueden clasificarse en:
+					<ul>
+						<li>Métodos de instancia</li>
+						<li>Métodos de clase</li>
+						<li>Métodos estáticos</li>
+						<li>Métodos especiales o mágicos</li>
+					</ul>
+				</p>			
+			</div>
+			
+			<div class="card">
+				<h3 class="sub">📂 Métodos de instancia</h3>
+				<p>
+					Son los más comunes. Trabajan con atributos del objeto mediante el parámetro <code>self</code>.
+				</p>
+				
+				<h3 class="sub">🔤 Sintaxis:</h3>
+<pre>
+<code class="language-python">class NombreClase:
+
+    def método(self):
+        instrucciones</code>
+</pre>
+			
+
+				<h3 class="sub">💻 Ejemplo:</h3>
+				<div class="snippet">
+					<div class="snippet-bar">
+					  <div class="dots"><span></span><span></span><span></span></div>
+					  <span class="snippet-title">Python</span>
+					  <span class="snippet-tag tag-fn">ejemplo</span>
+					</div>
+					<div class="code-wrap">
+						<div class="line-numbers-col"></div>
+<pre>
+<code class="language-python">class Motor:
+
+    def __init__(self, potencia):
+        self.potencia = potencia
+
+    def mostrar(self):	# método de instancia
+		print(f"Potencia: {self.potencia} HP")
+
+motor = Motor(10)
+motor.mostrar()</code>
+</pre>
+					</div>
+
+					<div class="snippet-bar output-bar">
+					  <span class="snippet-tag tag-output">salida</span>
+					</div>
+
+					<div class="output-body">
+<pre>
+Potencia: 10 HP
+</pre>
+					</div>
+				</div>
+				
+			</div>
+			
+			
+			<div class="card">
+				<h3 class="sub">📂 Métodos de clase</h3>
+				<p>
+					Trabajan con la clase y no con un objeto específico.
+					<br>
+					Utilizan el parámetro <code>cls</code>.
+					<br>
+					Los métodos de clase se definen utilizando el decorador <code>@classmethod</code>.
+				</p>
+
+				<h3 class="sub">🔤 Sintaxis:</h3>
+<pre>
+<code class="language-python">class NombreClase:
+
+	@classmethod
+    def método(cls):
+        instrucciones</code>
+</pre>
+				
+
+				<h3 class="sub">💻 Ejemplo:</h3>
+				<div class="snippet">
+					<div class="snippet-bar">
+					  <div class="dots"><span></span><span></span><span></span></div>
+					  <span class="snippet-title">Python</span>
+					  <span class="snippet-tag tag-fn">ejemplo</span>
+					</div>
+					<div class="code-wrap">
+						<div class="line-numbers-col"></div>
+<pre>
+<code class="language-python">class Motor:
+
+    fabricante = "ABB"
+
+    @classmethod
+    def mostrar_fabricante(cls):
+        print(f"Fabricante: {cls.fabricante}")
+
+motor = Motor()
+motor.mostrar_fabricante()</code>
+</pre>
+					</div>
+
+					<div class="snippet-bar output-bar">
+					  <span class="snippet-tag tag-output">salida</span>
+					</div>
+
+					<div class="output-body">
+<pre>
+Fabricante: ABB
+</pre>
+					</div>
+				</div>
+			
+			</div>
+			
+			
+			<div class="card">
+				<h3 class="sub">📂 Métodos estáticos</h3>
+				<p>
+					No utilizan ni <code>self</code> ni <code>cls</code>.
+					<br>
+					Son funciones relacionadas con la clase, pero independientes de sus atributos. 
+					<br>
+					Los métodos estáticos se definen utilizando el decorador <code>@staticmethod</code>.
+				</p>
+
+				<h3 class="sub">🔤 Sintaxis:</h3>
+<pre>
+<code class="language-python">class NombreClase:
+
+	@staticmethod
+    def método():
+        instrucciones</code>
+</pre>
+
+
+				<h3 class="sub">💻 Ejemplo:</h3>
+				<div class="snippet">
+					<div class="snippet-bar">
+					  <div class="dots"><span></span><span></span><span></span></div>
+					  <span class="snippet-title">Python</span>
+					  <span class="snippet-tag tag-fn">ejemplo</span>
+					</div>
+					<div class="code-wrap">
+						<div class="line-numbers-col"></div>
+<pre>
+<code class="language-python">class Motor:
+
+    fabricante = "ABB"
+
+    @staticmethod
+    def funcion():
+        pass
+
+motor = Motor()
+...</code>
+</pre>
+					</div>
+
+					<div class="snippet-bar output-bar">
+					  <span class="snippet-tag tag-output">salida</span>
+					</div>
+
+					<div class="output-body">
+<pre>
+Fabricante: ABB
+</pre>
+					</div>
+				</div>
+			</div>
+			
+			
+			<div class="card">
+				<h3 class="sub">📂 Métodos especiales</h3>
+				<p>
+					Los métodos especiales (o dunder methods, de double underscore) permiten que tus clases se comporten como tipos nativos de Python: 
+					que puedan sumarse, compararse, imprimirse o iterarse. Python los invoca automáticamente en respuesta a operadores y funciones integradas (built-in).
+					<br>
+					Gracias a ellos, tus propias clases pueden comportarse como los tipos nativos (números, listas, diccionarios, etc.). A esto se le llama a veces el "modelo de datos" de Python.
+				</p>
+
+				<h3 class="sub">🔤 Sintaxis:</h3>
+<pre>
+<code class="language-python">class NombreClase:
+
+    def __método__():
+        instrucciones</code>
+</pre>
+
+				<h3 class="sub">💻 Ejemplo:</h3>
+				<div class="snippet">
+					<div class="snippet-bar">
+					  <div class="dots"><span></span><span></span><span></span></div>
+					  <span class="snippet-title">Python</span>
+					  <span class="snippet-tag tag-fn">ejemplo</span>
+					</div>
+					<div class="code-wrap">
+						<div class="line-numbers-col"></div>
+<pre>
+<code class="language-python">class Motor:
+
+    def __init__(self, potencia):	# método especial
+        self.potencia = potencia
+
+    def mostrar(self):			   # método de instancia
+		print(f"Potencia: {self.potencia} HP")
+
+motor = Motor(10)
+motor.mostrar()</code>
+</pre>
+					</div>
+
+					<div class="snippet-bar output-bar">
+					  <span class="snippet-tag tag-output">salida</span>
+					</div>
+
+					<div class="output-body">
+<pre>
+Fabricante: ABB
+</pre>
+					</div>
+				</div>	
+			</div>
+			
+			
+			<div class="card">
+				<p>
+					Estos son algunos métodos especiales:
+				<p>
+				<table class="comparison-table">
+					<thead>
+						<tr>
+						<th>Método especial</th>
+						<th>Descripción</th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr>
+						<td><code>__new__</code></td>
+						<td>Crea y devuelve una nueva instancia del objeto (antes de __init__). Recibe la clase (cls) como primer parámetro. Se usa sobre todo con tipos inmutables, singletons o fábricas.</td>
+						</tr>
+						<tr>
+						<td><code>__del__</code></td>
+						<td>Se ejecuta cuando el objeto está a punto de ser destruido (finalizador). No garantiza un momento exacto de ejecución; no se recomienda para liberar recursos críticos.</td>
+						</tr>
+						<tr>
+						<td><code>__init__</code></td>
+						<td>Inicializa la instancia recién creada: asigna atributos y valores de partida. Se ejecuta justo después de __new__. Debe devolver None.</td>
+						</tr>
+						<tr>
+						<td><code>__str__</code></td>
+						<td>Devuelve una representación en cadena legible para el usuario. La usan str() y print(). Debe devolver un str.</td>
+						</tr>
+						<tr>
+						<td><code>__format__</code></td>
+						<td>Devuelve una representación en cadena según un especificador de formato. La usan format() y los f-strings con :spec. Debe devolver un str.</td>
+						</tr>
+						<tr>
+						<td><code>__repr__</code></td>
+						<td>Devuelve una representación en cadena precisa, orientada a desarrolladores (ideal si es reproducible con eval). La usan repr() y la consola interactiva. Debe devolver un str.</td>
+						</tr>
+					</tbody>
+				</table>
+			</div>
+			
+			<div class="card">
+				<h3 class="sub">❓ Cuándo usarlos</h3>
+				<table class="comparison-table">
+					<thead>
+						<tr>
+						<th>Método</th>
+						<th>Recomendación</th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr>
+						<td><code>__new__</code></td>
+						<td>Sobrescríbelo solo si de verdad necesitas controlar la creación (inmutables, singleton, caché).</td>
+						</tr>
+						<tr>
+						<td><code>__init__</code></td>
+						<td>Mantenlo simple: asignar y validar. Evita lógica pesada o efectos secundarios raros.</td>
+						</tr>
+						<tr>
+						<td><code>__del__</code></td>
+						<td>Evítalo si puedes; prefiere with / contextlib / weakref.finalize.</td>
+						</tr>
+						<tr>
+						<td><code>__str__</code></td>
+						<td>Opcional; solo si quieres una salida distinta (más amigable) que __repr__.</td>
+						</tr>
+						<tr>
+						<td><code>__repr__</code></td>
+						<td>Defínelo para depurar.</td>
+						</tr>
+						<tr>
+						<td><code>__format__</code></td>
+						<td>Solo si necesitas formatos especiales (ej. distintas unidades, escalas, notaciones).</td>
+						</tr>
+					</tbody>
+				</table>
+			</div>
+				
+			<div class="nav-buttons"><button class="nav-arrow-btn" onclick="goToSection(2)">← Anterior</button><button class="nav-arrow-btn" onclick="goToSection(4)">Siguiente: Encapsulamiento →</button></div>
+		</div>
+		
+		
+		<!-- =========================================================== -->
+		<!-- ===================== ENCAPSULAMIENTO ===================== -->
+		<!-- =========================================================== -->
+		<div class="section" id="section-4">
+			<div class="section-header">
+				<div class="section-icon icon-yellow"><i class="ti ti-file-type-csv"></i></div>
+				<div class="section-header-text">
+					<h2>Encapsulamiento</h2>
+					<p>Principio que oculta el estado interno de un objeto.</p>
+				</div>
+			</div>
+			
+			<div class="card">
+				<h3>📂 Encapsulamiento</h3>
+				<p>
+					La encapsulación es un principio fundamental de la programación orientada a objetos (POO) que consiste en agrupar datos (atributos) 
+					y métodos (funciones) que operan sobre esos datos dentro de una única unidad, denominada clase. Los principales objetivos de la 
+					encapsulación son:
+				</p>
+				<ol style="padding-left: 40px;">
+					<li>
+						<strong>Ocultación de datos:</strong> La encapsulación oculta los detalles de implementación interna de un objeto al exterior, impidiendo el 
+						acceso directo a sus datos. Esto protege los datos de modificaciones accidentales y garantiza su integridad.
+					</li>
+					<li>
+						<strong>Control de acceso:</strong> La encapsulación permite controlar el acceso a los datos y métodos del objeto mediante la definición de 
+						modificadores de acceso (público, protegido y privado) que determinan el nivel de accesibilidad.
+					</li>
+				</ol>
+				<p>
+					Sin embargo, Python no implementa estos modificadores de acceso explícitos. En cambio, el lenguaje se basa en convenciones de nomenclatura 
+					para indicar la accesibilidad prevista:
+				</p>
+				<br>
+				
+			</div>
+			
+			<div class="card">
+				<p>
+					<strong>1. Público (sin prefijo):</strong> Indica que el atributo/método es accesible desde cualquier lugar, dentro y fuera de la clase.
+				</p>
+			
+				<h3 class="sub">💻 Ejemplo:</h3>
+				<div class="snippet">
+					<div class="snippet-bar">
+					  <div class="dots"><span></span><span></span><span></span></div>
+					  <span class="snippet-title">Python</span>
+					  <span class="snippet-tag tag-fn">ejemplo</span>
+					</div>
+					<div class="code-wrap">
+						<div class="line-numbers-col"></div>
+<pre>
+<code class="language-python">class Persona:
+    def __init__(self, nombre):
+        self.nombre = nombre  # atributo público
+
+p = Persona("Ana")
+print(p.nombre)  # ✅ "Ana"</code>
+</pre>
+					</div>
+
+					<div class="snippet-bar output-bar">
+					  <span class="snippet-tag tag-output">salida</span>
+					</div>
+
+					<div class="output-body">
+<pre>
+Ana
+</pre>
+					</div>
+				</div>
+			</div>
+			
+			
+			<div class="card">
+				<p>
+					<strong>2. Protegido (un guión bajo: <code>_</code> ):</strong> Indica que el atributo/método es de <strong>uso interno</strong> de la clase y sus subclases. Es 
+					solo una convención: técnicamente sigue siendo accesible desde fuera.
+				</p>
+			
+				<h3 class="sub">💻 Ejemplo:</h3>
+				<div class="snippet">
+					<div class="snippet-bar">
+					  <div class="dots"><span></span><span></span><span></span></div>
+					  <span class="snippet-title">Python</span>
+					  <span class="snippet-tag tag-fn">ejemplo</span>
+					</div>
+					<div class="code-wrap">
+						<div class="line-numbers-col"></div>
+<pre>
+<code class="language-python">class Persona:
+    def __init__(self, nombre):
+        self._nombre = nombre  # "no deberías tocar esto desde fuera"
+
+p = Persona("Ana")
+print(p._nombre)  # ⚠️ Funciona, pero va contra la convención</code>
+</pre>
+					</div>
+
+					<div class="snippet-bar output-bar">
+					  <span class="snippet-tag tag-output">salida</span>
+					</div>
+
+					<div class="output-body">
+<pre>
+Ana
+</pre>
+					</div>
+				</div>
+				<p>
+					Se usa para decirle a otros desarrolladores: <em>"esto es un detalle de implementación, no lo uses directamente."</em>
+				</p>
+			</div>
+			
+			
+			<div class="card">
+				<p>
+					<strong>3. Privado (dos guiones bajos: <code>__</code> ):</strong> Python aplica <strong>name mangling</strong>: el intérprete renombra el atributo 
+					internamente a <code>_NombreClase__atributo</code>, haciendo más difícil (pero no imposible) acceder a él desde fuera.
+				</p>
+			
+				<h3 class="sub">💻 Ejemplo:</h3>
+				<div class="snippet">
+					<div class="snippet-bar">
+					  <div class="dots"><span></span><span></span><span></span></div>
+					  <span class="snippet-title">Python</span>
+					  <span class="snippet-tag tag-fn">ejemplo</span>
+					</div>
+					<div class="code-wrap">
+						<div class="line-numbers-col"></div>
+<pre>
+<code class="language-python">class Persona:
+    def __init__(self, nombre):
+        self.__nombre = nombre  # privado
+
+p = Persona("Ana")
+print(p.__nombre)          # ❌ AttributeError
+print(p._Persona__nombre)  # ✅ Accesible con el nombre "mangleado"</code>
+</pre>
+					</div>
+
+					<div class="snippet-bar output-bar">
+					  <span class="snippet-tag tag-output">salida</span>
+					</div>
+
+					<div class="output-body">
+<pre>
+Ana
+</pre>
+					</div>
+				</div>
+			</div>
+			
+			<div class="note-box">
+				<div class="note-title">📝 Nota:</div>
+				<p>
+					En Python, <strong>lo más común es utilizar atributos públicos</strong>.
+					<br>
+					Esto puede sorprender a quienes vienen de lenguajes como C++, Java o C#, donde los atributos 
+					suelen declararse privados.
+				</p>
+			</div>
+			
+			<div class="note-box">
+				<div class="note-title">📝 Filosofía de Python:</div>
+				<p>
+					Python sigue la filosofía:
+				<p>
+				<br>
+				<p style="text-align: center;"><strong><em>"We're all consenting adults here."</em></strong></p>
+				<br>
+				<p>
+					Es decir, se confía en que el programador usará los objetos correctamente.
+					<br>
+					Por ello, no existe una verdadera restricción de acceso como private o protected de otros lenguajes.
+				</p>
+			</div>
+			
+			<div class="tip-box">
+				<div class="tip-title">💡 Punto clave:</div>
+				<p>
+					Python sigue la filosofía <em>"we're all consenting adults here"</em>: confía en que los desarrolladores respetan las convenciones en lugar de 
+					imponer restricciones duras. El doble guión bajo no es un candado, es más bien una señal de "en serio, no toques esto".
+				</p>
+			</div>
+
+				
+			<div class="nav-buttons"><button class="nav-arrow-btn" onclick="goToSection(3)">← Anterior</button><button class="nav-arrow-btn" onclick="goToSection(5)">Siguiente: Properties →</button></div>
+		</div>
+		
+		
+		<!-- ====================================================== -->
+		<!-- ===================== PROPERTIES ===================== -->
+		<!-- ====================================================== -->
+		<div class="section" id="section-5">
+			<div class="section-header">
+				<div class="section-icon icon-yellow"><i class="ti ti-file-type-csv"></i></div>
+				<div class="section-header-text">
+					<h2>Properties</h2>
+					<p>Mecanismos que permiten acceder y modificar un atributo privado como si fuera público.</p>
+				</div>
+			</div>
+			
+			<div class="card">
+				<h3>📂 Properties</h3>
+				<p>
+					Una <strong>property</strong> (propiedad) es un mecanismo que permite controlar el acceso a un atributo como si fuera una variable normal, pero ejecutando métodos internamente.
+					<br>
+					Esto permite:
+				</p>
+				<ul>
+					<li>
+						Validar datos.
+					</li>
+					<li>
+						Restringir accesos.
+					</li>
+					<li>
+						Realizar cálculos automáticos.
+					</li>
+					<li>
+						Mantener el encapsulamiento.
+					</li>
+				</ul>
+				<p>
+					Una property suele definirse mediante tres elementos:
+				</p>
+				<h3 class="sub">🔤 Sintaxis:</h3>
+				<ol style="padding-left: 45px;">
+					<li>
+						Getter
+					</li>
+					<li>
+						Setter
+					</li>
+					<li>
+						Deleter (opcional)
+					</li>
+				</ol>
+			</div>
+			
+			<div class="card">
+				<h3>📂 Getter</h3>
+				<p>
+					Permite obtener el valor.
+				</p>
+				
+				<h3 class="sub">🔤 Sintaxis:</h3>
+<pre>
+<code class="language-python">class NombreClase:
+
+    @property
+    def atributo(self):
+        ...</code>
+</pre>
+
+				<h3 class="sub">💻 Ejemplo:</h3>
+				<div class="snippet">
+					<div class="snippet-bar">
+					  <div class="dots"><span></span><span></span><span></span></div>
+					  <span class="snippet-title">Python</span>
+					  <span class="snippet-tag tag-fn">ejemplo</span>
+					</div>
+					<div class="code-wrap">
+						<div class="line-numbers-col"></div>
+<pre>
+<code class="language-python">class Persona:
+
+    def __init__(self):
+        self._edad = 0
+
+    @property
+    def edad(self):
+        return self._edad
+
+p = Persona()
+
+print(p.edad)</code>
+</pre>
+					</div>
+
+					<div class="snippet-bar output-bar">
+					  <span class="snippet-tag tag-output">salida</span>
+					</div>
+
+					<div class="output-body">
+<pre>
+...
+</pre>
+					</div>
+				</div>
+				<p>
+					Observa que:
+					<br>
+					<code>p.edad</code>
+					<br>
+					parece un atributo, pero en realidad ejecuta:
+					<br>
+					<code>edad()</code>
+				</p>
+			</div>
+			
+			
+			<div class="card">
+				<h3>📂 Setter</h3>
+				<p>
+					Permite asignar un valor.
+				</p>
+				
+				<h3 class="sub">🔤 Sintaxis:</h3>
+<pre>
+<code class="language-python">class NombreClase:
+
+    @atributo.setter
+    def atributo(self, valor):
+        ...</code>
+</pre>
+
+				<h3 class="sub">💻 Ejemplo:</h3>
+				<div class="snippet">
+					<div class="snippet-bar">
+					  <div class="dots"><span></span><span></span><span></span></div>
+					  <span class="snippet-title">Python</span>
+					  <span class="snippet-tag tag-fn">ejemplo</span>
+					</div>
+					<div class="code-wrap">
+						<div class="line-numbers-col"></div>
+<pre>
+<code class="language-python">class Persona:
+
+    def __init__(self):
+        self._edad = 0
+
+    @property
+    def edad(self):
+        return self._edad
+
+    @edad.setter
+    def edad(self, valor):
+        self._edad = valor
+		
+p = Persona()
+
+p.edad = 25</code>
+</pre>
+					</div>
+
+					<div class="snippet-bar output-bar">
+					  <span class="snippet-tag tag-output">salida</span>
+					</div>
+
+					<div class="output-body">
+<pre>
+...
+</pre>
+					</div>
+				</div>
+				<p>
+					Python ejecuta:
+					<br>
+					<code>p.edad(25)</code>
+					<br>
+					internamente (conceptualmente).
+				</p>
+			</div>
+			
+			
+			<div class="card">
+				<h3>📂 Deleter</h3>
+				<p>
+					Permite definir qué ocurre cuando se utiliza del.
+				</p>
+				
+				<h3 class="sub">🔤 Sintaxis:</h3>
+<pre>
+<code class="language-python">class NombreClase:
+
+	@atributo.deleter
+    def atributo(self):
+        ...</code>
+</pre>
+
+				<h3 class="sub">💻 Ejemplo:</h3>
+				<div class="snippet">
+					<div class="snippet-bar">
+					  <div class="dots"><span></span><span></span><span></span></div>
+					  <span class="snippet-title">Python</span>
+					  <span class="snippet-tag tag-fn">ejemplo</span>
+					</div>
+					<div class="code-wrap">
+						<div class="line-numbers-col"></div>
+<pre>
+<code class="language-python">class Persona:
+
+    def __init__(self):
+        self._edad = 20
+
+    @property
+    def edad(self):
+        return self._edad
+
+    @edad.deleter
+    def edad(self):
+        print("Edad eliminada")
+        del self._edad
+
+p = Persona()
+
+del p.edad</code>
+</pre>
+					</div>
+
+					<div class="snippet-bar output-bar">
+					  <span class="snippet-tag tag-output">salida</span>
+					</div>
+
+					<div class="output-body">
+<pre>
+Edad eliminada
+</pre>
+					</div>
+				</div>
+				<p>
+					...
+				</p>
+			</div>
+			
+			
+			<div class="card">
+				<h3>📂 Ventajas de las Properties</h3>
+				<ul>
+					<li>
+						Encapsulan los datos.
+					</li>
+					<li>
+						Permiten validar información.
+					</li>
+					<li>
+						Mantienen una sintaxis sencilla.
+					</li>
+					<li>
+						Evitan modificaciones incorrectas.
+					</li>
+					<li>
+						Facilitan cambios futuros sin modificar el código cliente.
+					</li>
+				</ul>
+				<p>
+					La principal ventaja de las properties es que permiten que un atributo se utilice como una variable normal (obj.edad), mientras que 
+					internamente Python ejecuta métodos que pueden validar, calcular o controlar el acceso a los datos. Esto proporciona encapsulamiento 
+					sin complicar la sintaxis para quien utiliza la clase.
+				</p>
+			</div>
+			
+			<div class="note-box">
+				<div class="note-title">📝 Nota:</div>
+				<p>
+					El deleter es el menos común de los tres. En la práctica casi siempre verás solo el getter, o getter + setter cuando se necesita validación.
+				</p>
+			</div>
+
+				
+			<div class="nav-buttons"><button class="nav-arrow-btn" onclick="goToSection(4)">← Anterior</button><button class="nav-arrow-btn" onclick="goToSection(6)">Siguiente: Diagrama de Clases →</button></div>
+		</div>
+		
+		
+		<!-- =============================================================== -->
+		<!-- ===================== DIAGRAMAS DE CLASES ===================== -->
+		<!-- =============================================================== -->
+		<div class="section" id="section-6">
+			<div class="section-header">
+				<div class="section-icon icon-yellow"><i class="ti ti-file-type-csv"></i></div>
+				<div class="section-header-text">
+					<h2>Diagramas de Clases</h2>
+					<p>Representación gráfica (UML) de la estructura de un sistema.</p>
+				</div>
+			</div>
+			
+			<div class="card">
+				<h3>📂 Diagramas de clase</h3>
+				<p>
+					Los <strong>diagramas de clase</strong> son una notación visual del estándar UML (Unified Modeling Language) para representar la estructura 
+					de un sistema orientado a objetos. Muestran clases, sus atributos, métodos y las relaciones entre ellas. Son independientes del lenguaje y 
+					ampliamente usados en diseño de software.
+				</p>
+			</div>
+			
+			<div class="card">
+				<h3>📂 Estructura básica</h3>
+				<p>
+					Una clase se representa mediante un rectángulo dividido en tres secciones:
+				</p>
+				<br>
+<pre style="text-align: center;">
++-------------------+
+|      Persona      |
++-------------------+
+| + nombre: str     |
+| + edad: int       |
++-------------------+
+| + saludar(): str  |
+| + mostrar(): None |
++-------------------+
+Figura 1. Diagrama de clases.
+</pre>
+				<br>
+				<p>
+					<strong>1. Nombre de la clase</strong>
+					<br>
+					Se coloca en la parte superior.
+					<br>
+					<code>Persona</code>
+					<br>
+					Generalmente se escribe:
+				</p>
+				
+				<ul style="padding-left: 30px;">
+					<li>En singular</li>
+					<li>Con la primera letra de cada palabra en mayúscula (PascalCase)</li>
+				</ul>
+				
+				<p>
+					Ejemplos:
+					<code>
+						<br>
+						Persona
+						<br>
+						CuentaBancaria
+						<br>
+						Vehiculo
+						<br>
+						Estudiante
+					</code>
+				</p>
+				
+				<br>
+				<p>
+					<strong>2. Atributos</strong>
+					<br>
+					Se colocan en la sección central.
+					<br>
+					<code>
+						- nombre : str
+						<br>
+						- edad : inr
+					</code>
+				</p>
+				
+				<br>
+				<p>
+					<strong>3. Métodos</strong>
+					<br>
+					Se colocan en la sección inferior.
+					<br>
+					<code>
+						+ saludar(): str
+						<br>
+						+ cumplirAnios(): void
+					</code>
+				</p>
+				
+				<br>
+				<p>
+					<strong>Visibilidad de atributos/métodos</strong>
+					<br>
+					Público (+)
+					<br>
+					<code>+ nombre: str</code>
+					<br><br>
+					Protegido (#)
+					<br>
+					<code># salario: float</code>
+					<br><br>
+					Privado (-)
+					<br>
+					<code>- password: str</code>
+				</p>
+				
+				<br>
+				<p>
+					<strong>Sintaxis UML de un atributo</strong>
+					<br>
+					<code>visibilidad nombre : tipo</code>
+				</p>
+				
+				<br>
+				<p>
+					<strong>Sintaxis UML de un método</strong>
+					<br>
+					<code>visibilidad nombre(parámetros): tipo_retorno</code>
+				</p>
+				
+				<br><br>
+				<p>
+					El siguiente código implementa el diagrama de clases UML presentado en la figura 1.
+				</p>					
+<pre>
+<code class="language-python">class Persona:
+
+    def __init__(self, nombre: str, edad: int):
+        self.nombre = nombre
+        self.edad = edad
+
+    def saludar(self) -> str:
+        return f"Hola, me llamo {self.nombre}"
+
+    def mostrar(self) -> None:
+        print(f"Nombre: {self.nombre}")
+        print(f"Edad: {self.edad} años")</code>
+</pre>
+			</div>
+			
+			<div class="card">
+				<h3>Tipos de relaciones UML</h3>
+				
+				<table class="comparison-table table-compact">
+					<thead>
+						<tr>
+							<th>Relación</th>
+							<th>Símbolo</th>
+							<th>Significado</th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr>
+							<td>Herencia</td>
+							<td style="text-align: center;">──▷</td>
+							<td>"es un"</td>
+						</tr>
+						<tr>
+							<td>Composición</td>
+							<td style="text-align: center;">──◆</td>
+							<td>"está compuesto de"</td>
+						</tr>
+						<tr>
+							<td>Agregación</td>
+							<td style="text-align: center;">──◇</td>
+							<td>"tiene un"</td>
+						</tr>
+						<tr>
+							<td>Asociación</td>
+							<td style="text-align: center;">──</td>
+							<td>"usa un"</td>
+						</tr>
+						<tr>
+							<td>Dependencia</td>
+							<td style="text-align: center;">- -></td>
+							<td>"depende de"</td>
+						</tr>
+					</tbody>
+				</table>
+			</div>
+			
+			<div class="note-box">
+				<div class="note-title">📝 Nota:</div>
+				<p>
+					Python no tiene visibilidad real (público/privado/protegido). La convención es: 
+					<code>atributo</code> = público, <code>_atributo</code> = protegido (convención), 
+					<code>__atributo</code> = privado (name mangling). UML mapea estos prefijos a <code>+</code>, 
+					<code>#</code> y <code>-</code> respectivamente.
+				</p>
+			</div>
+
+				
+			<div class="nav-buttons"><button class="nav-arrow-btn" onclick="goToSection(5)">← Anterior</button><button class="nav-arrow-btn" onclick="goToSection(7)">Siguiente: Quiz →</button></div>
+		</div>
+					
+
+    </main>
+
+    <footer class="footer-m365">
+		<div class="footer-content">
+			<div class="footer-top-bar"></div>
+			<p class="footer-m365-title">Curso Fundamentos de Python</p>
+			<p class="footer-m365-label">Módulo Fundamentos de Programación</p>
+			<div class="footer-banner" >
+				<div class="footer-text">
+					<span class="label">Instructor: </span>
+					<div class="footer-logo-space">
+						<img src="imgs/LogoM.png" alt="Logo" style="height: 44px;"><span class="name">anuel</span>
+					</div>
+					<div class="footer-logo-space">
+						<img src="imgs/LogoA.png" alt="Logo" style="height: 40px;"><span class="name">lejandro</span>
+					</div>
+					<div class="footer-logo-space">
+						<img src="imgs/LogoL.png" alt="Logo"><span class="name">ópez</span>
+					</div>
+					<div class="footer-logo-space">
+						<img src="imgs/LogoZ.png" alt="Logo"><span class="name">epeda</span>
+					</div>
+				</div>
+			</div>
+			<div class="footer-bottom-bar"></div>
+		</div>
+	</footer>
+
+    <script>		
+        let currentSection = 0; const totalSections = 10;
+        function goToSection(index) { if (index < 0 || index >= totalSections) return; document.querySelectorAll('.section').forEach(s => s.classList.remove('active')); const target = document.getElementById('section-' + index); if (target) target.classList.add('active'); currentSection = index; document.querySelectorAll('.nav-btn').forEach((btn, i) => btn.classList.toggle('active', i === index)); updateProgress(); window.scrollTo({ top: 0, behavior: 'smooth' }); document.getElementById('scorePanel').style.display = index === 8 ? 'block' : 'none'; if (index === 9 && typeof _editors !== 'undefined') { setTimeout(() => { Object.values(_editors).forEach(({ cm }) => cm.refresh()); }, 50); } }
+        function updateProgress() { document.getElementById('progressFill').style.width = ((currentSection + 1) / totalSections * 100) + '%'; document.getElementById('progressText').textContent = 'Sección ' + (currentSection + 1) + ' de ' + totalSections; }
+        // ===== QUIZ =====
+        const questions = [
+          {
+            text: '¿Qué palabra clave se utiliza en Python para definir una función?',
+            code: null,
+            opts: ['function', 'def', 'fun', 'define'],
+            ans: 1,
+            exp: 'En Python las funciones se definen con la palabra clave <code>def</code>, seguida del nombre, paréntesis y dos puntos: <code>def mi_funcion():</code>'
+          },
+          {
+            text: '¿Qué devuelve una función que NO tiene instrucción <code>return</code>?',
+            code: 'def saludar():\n    print("Hola")\n\nresultado = saludar()\nprint(resultado)',
+            opts: ['0', 'False', 'None', 'Lanza un error'],
+            ans: 2,
+            exp: 'Toda función sin <code>return</code> (o con <code>return</code> vacío) devuelve <code>None</code> implícitamente.'
+          },
+          {
+            text: '¿Qué imprime este código?',
+            code: 'def potencia(base, exponente=2):\n    return base ** exponente\n\nprint(potencia(3))',
+            opts: ['9', '6', '8', 'TypeError'],
+            ans: 0,
+            exp: 'Como no se pasa el segundo argumento, se usa el valor por defecto <code>exponente=2</code>. Entonces <code>3 ** 2 = 9</code>.'
+          },
+          {
+            text: '¿Cuál de las siguientes definiciones causa un <code>SyntaxError</code>?',
+            code: null,
+            opts: [
+              'def f(a, b=10):',
+              'def f(a=5, b=10):',
+              'def f(a=5, b):',
+              'def f(a, b, c=0):'
+            ],
+            ans: 2,
+            exp: 'Los parámetros con valor por defecto siempre deben ir DESPUÉS de los parámetros sin default. Poner <code>a=5</code> antes de <code>b</code> (sin default) genera un <code>SyntaxError</code>.'
+          },
+          {
+            text: '¿Qué tipo de función es <code>cuadrado = lambda x: x ** 2</code>?',
+            code: null,
+            opts: [
+              'Una función recursiva',
+              'Una función anónima de una sola línea (lambda)',
+              'Una función con parámetros por nombre',
+              'Una función sin parámetros'
+            ],
+            ans: 1,
+            exp: 'Las funciones <code>lambda</code> son funciones anónimas (sin nombre) de una sola expresión. Son equivalentes a <code>def cuadrado(x): return x ** 2</code>.'
+          },
+          {
+            text: '¿Qué imprime este código?',
+            code: 'def menor_mayor(a, b):\n    return min(a, b), max(a, b)\n\np, q = menor_mayor(8, 3)\nprint(p, q)',
+            opts: ['8 3', '3 8', '(3, 8)', 'TypeError'],
+            ans: 1,
+            exp: '<code>return min(a,b), max(a,b)</code> devuelve una tupla <code>(3, 8)</code>. Al hacer <code>p, q = ...</code> se desempaqueta: <code>p=3</code>, <code>q=8</code>. Se imprime <code>3 8</code>.'
+          },
+          {
+            text: '¿Qué hace el símbolo <code>*</code> solo en la firma de esta función?',
+            code: 'def conectar(host, *, timeout=30):\n    pass',
+            opts: [
+              'Indica que la función acepta cualquier número de argumentos posicionales',
+              'Actúa como separador: todo lo que sigue solo puede pasarse por nombre (keyword-only)',
+              'Es un error de sintaxis',
+              'Hace que el parámetro timeout sea obligatorio'
+            ],
+            ans: 1,
+            exp: 'El <code>*</code> solo como separador indica que los parámetros que le siguen (<code>timeout</code>) son <em>keyword-only</em>: deben pasarse obligatoriamente por nombre, no por posición.'
+          },
+          {
+            text: '¿Qué imprime este código?',
+            code: 'def sumar(*nums):\n    return sum(nums)\n\nprint(sumar(1, 2, 3, 4))',
+            opts: ['[1, 2, 3, 4]', '10', '(1, 2, 3, 4)', 'Error'],
+            ans: 1,
+            exp: '<code>*nums</code> empaqueta todos los argumentos posicionales en una tupla. <code>sum((1,2,3,4))</code> devuelve <code>10</code>.'
+          },
+          {
+            text: '¿Cuál es la característica principal de una función recursiva?',
+            code: null,
+            opts: [
+              'Que no tiene parámetros',
+              'Que retorna siempre None',
+              'Que se llama a sí misma y tiene un caso base que detiene la recursión',
+              'Que solo acepta argumentos por nombre'
+            ],
+            ans: 2,
+            exp: 'Una función recursiva se llama a sí misma. La clave es tener un <strong>caso base</strong> que detenga la recursión; sin él, la función se llamaría infinitamente hasta generar un <code>RecursionError</code>.'
+          },
+          {
+            text: '¿Qué devuelve <code>divmod(17, 5)</code>?',
+            code: null,
+            opts: ['3', '2', '(3, 2)', '3.4'],
+            ans: 2,
+            exp: '<code>divmod(x, y)</code> es una función built-in que devuelve una tupla <code>(cociente, residuo)</code>. 17 ÷ 5 = 3 con residuo 2, por eso devuelve <code>(3, 2)</code>.'
+          }
+        ];
+
+        let currentQ = 0;
+        let quizScore = 0;
+        let answered = false;
+
+        function renderQuestion() {
+          const q = questions[currentQ];
+
+          // Construir el HTML de la pregunta separando texto y código
+          let questionHTML =
+            '<span style="color:var(--text-muted);font-size:0.8rem;">Pregunta ' + (currentQ+1) + ' de ' + questions.length + '</span><br><br>' +
+            '<p style="font-family:Segoe UI,Tahoma,sans-serif;font-size:1em;font-weight:600;color:var(--text-light);margin-bottom:' + (q.code ? '12px' : '0') + ';line-height:1.6;">' + q.text + '</p>';
+
+          if (q.code) {
+            questionHTML +=
+              '<pre style="font-family:Consolas,Monaco,monospace;font-size:0.88em;line-height:1.8;' +
+              'background:var(--bg-code);border:1px solid rgba(48,105,152,0.3);border-radius:8px;' +
+              'padding:12px 16px;color:var(--python-yellow);white-space:pre;overflow-x:auto;margin-top:4px;">' +
+              q.code.replace(/\\n/g, '\n') + '</pre>';
+          }
+
+          document.getElementById('quizQ').innerHTML = questionHTML;
+
+          const optsEl = document.getElementById('quizOpts');
+          optsEl.innerHTML = '';
+          q.opts.forEach((opt, i) => {
+            const btn = document.createElement('button');
+            btn.className = 'quiz-opt';
+            // Opciones: texto normal (sin código de bloque)
+            btn.innerHTML =
+              '<span style="color:var(--python-blue-light);font-weight:700;margin-right:10px;">' + String.fromCharCode(65+i) + '.</span>' +
+              '<span style="font-family:Segoe UI,Tahoma,sans-serif;white-space:pre-wrap;">' + opt + '</span>';
+            btn.onclick = () => answerQ(i, btn);
+            optsEl.appendChild(btn);
+          });
+          document.getElementById('quizFeedback').classList.remove('show');
+          document.getElementById('quizNext').classList.remove('show');
+          answered = false;
+        }
+
+        function answerQ(idx, btn) {
+          if (answered) return;
+          answered = true;
+          const q = questions[currentQ];
+          const allBtns = document.querySelectorAll('.quiz-opt');
+          const fb = document.getElementById('quizFeedback');
+          const nxt = document.getElementById('quizNext');
+          if (idx === q.ans) {
+            btn.classList.add('correct');
+            fb.className = 'quiz-feedback show ok';
+            fb.innerHTML = '✅ <strong>¡Correcto!</strong> ' + q.exp;
+            quizScore++;
+            document.getElementById('scoreValue').textContent = quizScore;
+          } else {
+            btn.classList.add('wrong');
+            allBtns[q.ans].classList.add('correct');
+            fb.className = 'quiz-feedback show fail';
+            fb.innerHTML = '❌ <strong>Incorrecto.</strong> ' + q.exp;
+          }
+          nxt.classList.add('show');
+          if (currentQ === questions.length - 1) { nxt.textContent = 'Ver resultado 🎉'; }
+        }
+
+        function nextQuestion() {
+          currentQ++;
+          if (currentQ >= questions.length) { showQuizResult(); } else { renderQuestion(); }
+        }
+
+        function showQuizResult() {
+          document.getElementById('quizContainer').style.display = 'none';
+          const r = document.getElementById('quizResult');
+          r.style.display = 'block';
+		  document.querySelector('#section-8 .nav-buttons .nav-arrow-btn:last-child').disabled = false;
+          const pct = Math.round((quizScore / questions.length) * 100);
+          document.getElementById('quizScore').textContent = quizScore + ' / ' + questions.length + ' (' + pct + '%)';
+          const msgs = [
+            [80, '🏆 ¡Excelente! Dominas las estructuras de iteración de Python.'],
+            [60, '👍 Bien hecho. Repasa break/continue/else para perfeccionar.'],
+            [0,  '📚 Sigue practicando. Revisa los ejemplos interactivos del tutorial.']
+          ];
+          document.getElementById('quizMsg').textContent = msgs.find(([min]) => pct >= min)[1];
+        }
+
+        function restartQuiz() {
+          currentQ = 0; quizScore = 0; answered = false;
+          document.getElementById('quizContainer').style.display = 'block';
+          document.getElementById('quizResult').style.display = 'none';
+          renderQuestion();
+        }
+		
+		/*
+		function finishTutorial() {
+          //alert('🎉 ¡Felicidades! Completaste el tutorial.\nPuntaje final: ' + quizScore + ' / ' + questions.length + '\n\nAhora pon en práctica lo aprendido en los ejercicios. ¡Éxito!');
+          goToSection(9);
+        }
+		*/
+
+        renderQuestion();
+        function runDemo1() { const edad = parseInt(document.getElementById('demo1-edad').value); const output = document.getElementById('demo1-output'); output.classList.add('has-output'); if (isNaN(edad)) { output.textContent = '⚠️ Ingresa un número válido.'; return; } output.textContent = (edad >= 18 ? 'Eres mayor de edad' : '') + '\nFin del programa'; }
+        function runDemo2() { const n = parseInt(document.getElementById('demo2-numero').value); const output = document.getElementById('demo2-output'); output.classList.add('has-output'); if (isNaN(n)) { output.textContent = '⚠️ Ingresa un número válido.'; return; } output.textContent = n + (n % 2 === 0 ? ' es par ✅' : ' es impar 🔵'); }
+        function runDemo3() { const nota = parseInt(document.getElementById('demo3-nota').value); const output = document.getElementById('demo3-output'); output.classList.add('has-output'); if (isNaN(nota) || nota < 0 || nota > 100) { output.textContent = '⚠️ Nota válida entre 0 y 100.'; return; } let r = nota >= 90 ? '🏆 Excelente - A' : nota >= 80 ? '👍 Muy bien - B' : nota >= 70 ? '📝 Bien - C' : nota >= 60 ? '⚠️ Suficiente - D' : '❌ Reprobado - F'; output.textContent = 'Nota: ' + nota + '/100\nResultado: ' + r; }
+        function runDemo4() { const a = parseFloat(document.getElementById('demo4-a').value); const b = parseFloat(document.getElementById('demo4-b').value); const output = document.getElementById('demo4-output'); output.classList.add('has-output'); if (isNaN(a) || isNaN(b)) { output.textContent = '⚠️ Ingresa números válidos.'; return; } let r = 'a = ' + a + ', b = ' + b + '\n\na > b: ' + (a>b) + '\na < b: ' + (a<b) + '\na == b: ' + (a===b) + '\na != b: ' + (a!==b) + '\n\na > 0 and b > 0: ' + (a>0&&b>0) + '\na > 0 or b > 0: ' + (a>0||b>0) + '\nnot (a > b): ' + !(a>b); output.textContent = r; }
+        function runDemo5() { const u = document.getElementById('demo5-user').value; const p = document.getElementById('demo5-pass').value; const r = document.getElementById('demo5-role').value; const output = document.getElementById('demo5-output'); output.classList.add('has-output'); if (u === 'admin' && p === '1234') { output.textContent = '✅ Login exitoso\n' + (r === 'administrador' ? '🔓 Acceso total' : r === 'editor' ? '✏️ Acceso de edición' : '👁️ Solo lectura'); } else { output.textContent = '❌ Credenciales incorrectas'; } }
+        function runDemo6() { const n = parseFloat(document.getElementById('demo6-num').value); const output = document.getElementById('demo6-output'); output.classList.add('has-output'); if (isNaN(n)) { output.textContent = '⚠️ Ingresa un número válido.'; return; } const tipo = n > 0 ? 'positivo' : n < 0 ? 'negativo' : 'cero'; const abs = n >= 0 ? n : -n; const par = n === 0 ? 'cero' : Math.abs(n) % 2 === 0 ? 'par' : 'impar'; output.textContent = 'Número: ' + n + '\nTipo: ' + tipo + '\nValor absoluto: ' + abs + '\nEs: ' + par; }
+        function runDemo7() { const dia = document.getElementById('demo7-dia').value; const output = document.getElementById('demo7-output'); output.classList.add('has-output'); let r = 'match dia:\n'; let m = ''; switch(dia) { case 'lunes': r += '    case "lunes":\n'; m = '💪 Inicio de semana'; break; case 'viernes': r += '    case "viernes":\n'; m = '🎉 ¡Casi fin de semana!'; break; case 'sábado': case 'domingo': r += '    case "sábado" | "domingo":\n'; m = '🏖️ Fin de semana'; break; default: r += '    case _:\n'; m = '📅 Día normal'; } r += '        print("' + m + '")\n\n📤 Salida:\n' + m; output.textContent = r; }
+		
+        // ===== SIMULADOR CORREGIDO CON SOPORTE PARA IF/ELIF/ELSE =====
+        function runEditor(num) {
+            const challengeBoxes = document.querySelectorAll('#section-8 .challenge-box');
+            const box = challengeBoxes[num - 1]; if (!box) return;
+            const instructionsDiv = box.querySelector('.editor-instructions');
+            const instructionsText = instructionsDiv ? instructionsDiv.innerText : '';
+            const textarea = document.getElementById('editor-' + num);
+            const fullCode = instructionsText + textarea.value;
+            const output = document.getElementById('output-' + num);
+            try { const result = simulatePython(fullCode); output.className = 'editor-output success'; output.textContent = result || '(Sin salida)'; } catch (e) { output.className = 'editor-output error'; output.textContent = '❌ Error: ' + e.message; }
+        }
+
+        function simulatePython(code) {
+            const lines = code.split('\n');
+            let output = [];
+            let variables = {};
+
+            function getIndent(line) { const m = line.match(/^(\s*)/); return m ? m[1].length : 0; }
+            function isEmpty(line) { const t = line.trim(); return t === '' || t.startsWith('#'); }
+
+            function evaluateCondition(cond) {
+                let expr = cond.trim();
+                for (let vn in variables) {
+                    const re = new RegExp('\\b' + vn.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + '\\b', 'g');
+                    const val = variables[vn];
+                    if (typeof val === 'number') expr = expr.replace(re, val);
+                    else if (typeof val === 'string') expr = expr.replace(re, '"' + val.replace(/"/g, '\\"') + '"');
+                }
+                expr = expr.replace(/\band\b/g, '&&').replace(/\bor\b/g, '||').replace(/\bnot\b/g, '!');
+                try { return !!Function('"use strict"; return (' + expr + ')')(); } catch(e) { return false; }
+            }
+
+            function evaluateExpression(expr) {
+                let e = expr.trim();
+                for (let vn in variables) {
+                    const re = new RegExp('\\b' + vn.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + '\\b', 'g');
+                    const val = variables[vn];
+                    if (typeof val === 'number') e = e.replace(re, val);
+                    else if (typeof val === 'string') e = e.replace(re, '"' + val.replace(/"/g, '\\"') + '"');
+                }
+                e = e.replace(/\bTrue\b/g, 'true').replace(/\bFalse\b/g, 'false');
+                e = e.replace(/\band\b/g, '&&').replace(/\bor\b/g, '||').replace(/\bnot\b/g, '!');
+                try { return Function('"use strict"; return (' + e + ')')(); } catch(e) { return expr; }
+            }
+
+            function processPrint(content) {
+                if (content.startsWith('f"') || content.startsWith("f'")) {
+                    let str = content.slice(2, -1);
+                    str = str.replace(/\{([^}]+)\}/g, (m, expr) => { try { return evaluateExpression(expr.trim()); } catch(e) { return m; } });
+                    output.push(str);
+                } else {
+                    if ((content.startsWith('"') && content.endsWith('"')) || (content.startsWith("'") && content.endsWith("'"))) output.push(content.slice(1, -1));
+                    else { try { output.push(String(evaluateExpression(content))); } catch(e) { output.push(content); } }
+                }
+            }
+
+            function processAssignment(line) {
+                const m = line.trim().match(/^(\w+)\s*=\s*(.+)$/);
+                if (m) {
+                    const vn = m[1]; let val = m[2].trim();
+                    if (val.startsWith('f"') || val.startsWith("f'")) {
+                        let s = val.slice(2, -1); s = s.replace(/\{([^}]+)\}/g, (mm, ex) => { try { return evaluateExpression(ex.trim()); } catch(e) { return mm; } }); variables[vn] = s;
+                    } else if ((val.startsWith('"') && val.endsWith('"')) || (val.startsWith("'") && val.endsWith("'"))) { variables[vn] = val.slice(1, -1); }
+                    else { try { variables[vn] = evaluateExpression(val); } catch(e) { variables[vn] = val; } }
+                    return true;
+                }
+                return false;
+            }
+
+            function skipBlock(start, baseInd) {
+                let i = start;
+                while (i < lines.length) { const l = lines[i]; if (isEmpty(l)) { i++; continue; } if (getIndent(l) <= baseInd) return i; i++; }
+                return i;
+            }
+
+            function processIfChain(start, chainInd) {
+                let i = start;
+                let satisfied = false;
+                while (i < lines.length) {
+                    const line = lines[i]; if (isEmpty(line)) { i++; continue; }
+                    const ind = getIndent(line);
+                    if (ind < chainInd) break;
+                    if (ind > chainInd) { i++; continue; }
+                    const trimmed = line.trim();
+                    const ifM = trimmed.match(/^if\s+(.+):$/);
+                    const elifM = trimmed.match(/^elif\s+(.+):$/);
+                    const elseM = trimmed.match(/^else:$/);
+                    if (!ifM && !elifM && !elseM) break;
+
+                    if (!satisfied) {
+                        if (ifM && evaluateCondition(ifM[1])) { satisfied = true; i = executeBlock(i + 1, chainInd); continue; }
+                        if (elifM && evaluateCondition(elifM[1])) { satisfied = true; i = executeBlock(i + 1, chainInd); continue; }
+                        if (elseM) { satisfied = true; i = executeBlock(i + 1, chainInd); continue; }
+                    }
+                    i = skipBlock(i + 1, chainInd);
+                }
+                return i;
+            }
+
+            function executeBlock(start, baseInd) {
+                let i = start;
+                while (i < lines.length) {
+                    const line = lines[i]; if (isEmpty(line)) { i++; continue; }
+                    const ind = getIndent(line); if (ind <= baseInd) return i;
+                    const trimmed = line.trim();
+                    if (trimmed.match(/^if\s+(.+):$/)) { i = processIfChain(i, ind); continue; }
+                    const pm = trimmed.match(/^print\((.+)\)$/);
+                    if (pm) { processPrint(pm[1]); i++; continue; }
+                    if (processAssignment(trimmed)) { i++; continue; }
+                    i++;
+                }
+                return i;
+            }
+
+            executeBlock(0, -1);
+            return output.join('\n');
+        }
+
+        function toggleSolution(num) { document.getElementById('solution-' + num).classList.toggle('visible'); }
+        document.addEventListener('keydown', function(e) { if (e.target.tagName === 'TEXTAREA') { if (e.key === 'Tab') { e.preventDefault(); const s = e.target.selectionStart; e.target.value = e.target.value.substring(0, s) + '    ' + e.target.value.substring(e.target.selectionEnd); e.target.selectionStart = e.target.selectionEnd = s + 4; } return; } if (e.key === 'ArrowRight' && currentSection < totalSections - 1) goToSection(currentSection + 1); else if (e.key === 'ArrowLeft' && currentSection > 0) goToSection(currentSection - 1); });
+        updateProgress();
+		
+		
+
+
+		
+		
+    </script>
+
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-core.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/autoloader/prism-autoloader.min.js"></script>
+<script>
+  function addLineNumbers() {
+    document.querySelectorAll('.code-wrap').forEach(wrap => {
+      const code = wrap.querySelector('code');
+      const col  = wrap.querySelector('.line-numbers-col');
+      if (!code || !col) return;
+      const lines = code.textContent.split('\n');
+      const count = lines[lines.length - 1].trim() === '' ? lines.length - 1 : lines.length;
+      col.innerHTML = Array.from({ length: count }, (_, i) => `<span>${i + 1}</span>`).join('');
+    });
+  }
+  document.addEventListener('DOMContentLoaded', () => {
+    if (window.Prism) Prism.hooks.add('complete', addLineNumbers);
+    setTimeout(addLineNumbers, 400);
+  });
+</script>
+</body>
+</html>
